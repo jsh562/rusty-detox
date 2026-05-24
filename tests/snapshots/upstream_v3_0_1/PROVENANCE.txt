@@ -1,0 +1,17 @@
+Upstream snapshot provenance for rusty-detox compat fixtures.
+
+Source: https://github.com/dharple/detox
+Tag: v3.0.1 (2025-08-10)
+Commit: TBD (record exact short-hash when fixtures are captured in T101)
+Capture host: TBD (e.g., "Ubuntu 24.04 LTS, glibc 2.39, detox 3.0.1 built from source")
+Capture date: TBD (ISO 8601)
+
+Per-fixture capture commands and stdout/stderr files are populated when the
+upstream snapshot pass lands (T101 in tasks.md). Each captured file in this
+directory MUST be accompanied by a one-line entry below documenting:
+  <fixture-name>.{stdout,stderr}: detox <flags> <input> (capture-date)
+
+Until the capture pass runs, this directory is intentionally empty and
+strict-mode byte-equal tests SKIP with a clear message rather than fail.
+
+Re-capture policy: PR-driven (HINT-004). Never auto-refresh in CI.
