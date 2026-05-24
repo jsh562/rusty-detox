@@ -46,10 +46,10 @@ jobs:
           # of any target the build-binaries matrix later cross-compiles for.
           # The completion scripts are derived from the CLI definition and are
           # identical regardless of build target — generate once, ship to all.
-          cargo run --release --features cli --bin rusty-pwgen -- completions bash       > dist/completions/rusty-pwgen.bash
-          cargo run --release --features cli --bin rusty-pwgen -- completions zsh        > dist/completions/_rusty-pwgen
-          cargo run --release --features cli --bin rusty-pwgen -- completions fish       > dist/completions/rusty-pwgen.fish
-          cargo run --release --features cli --bin rusty-pwgen -- completions powershell > dist/completions/rusty-pwgen.ps1
+          cargo run --release --features cli --bin rusty-detox -- completions bash       > dist/completions/rusty-detox.bash
+          cargo run --release --features cli --bin rusty-detox -- completions zsh        > dist/completions/_rusty-detox
+          cargo run --release --features cli --bin rusty-detox -- completions fish       > dist/completions/rusty-detox.fish
+          cargo run --release --features cli --bin rusty-detox -- completions powershell > dist/completions/rusty-detox.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: completions
@@ -77,13 +77,13 @@ jobs:
       - name: Install cross
         if: matrix.cross
         run: cargo install cross --locked
-      - name: Build (with pwgen-alias)
+      - name: Build (with inline-detox)
         shell: bash
         run: |
           if [ "${{ matrix.cross }}" = "true" ]; then
-            cross build --release --target ${{ matrix.target }} --features pwgen-alias
+            cross build --release --target ${{ matrix.target }} --features inline-detox
           else
-            cargo build --release --target ${{ matrix.target }} --features pwgen-alias
+            cargo build --release --target ${{ matrix.target }} --features inline-detox
           fi
       - name: Download completions
         uses: actions/download-artifact@v4
@@ -93,17 +93,17 @@ jobs:
       - name: Package archive
         shell: bash
         run: |
-          ARCHIVE="rusty-pwgen-${GITHUB_REF_NAME}-${{ matrix.target }}"
+          ARCHIVE="rusty-detox-${GITHUB_REF_NAME}-${{ matrix.target }}"
           mkdir -p "$ARCHIVE"
           if [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
-            cp target/${{ matrix.target }}/release/rusty-pwgen.exe "$ARCHIVE/"
-            cp target/${{ matrix.target }}/release/pee.exe "$ARCHIVE/" 2>/dev/null || true
+            cp target/${{ matrix.target }}/release/rusty-detox.exe "$ARCHIVE/"
+            cp target/${{ matrix.target }}/release/inline-detox.exe "$ARCHIVE/" 2>/dev/null || true
             cp -r dist/completions "$ARCHIVE/"
             cp README.md LICENSE LICENSE-APACHE "$ARCHIVE/"
             7z a "$ARCHIVE.zip" "$ARCHIVE"
           else
-            cp target/${{ matrix.target }}/release/rusty-pwgen "$ARCHIVE/"
-            cp target/${{ matrix.target }}/release/pee "$ARCHIVE/" 2>/dev/null || true
+            cp target/${{ matrix.target }}/release/rusty-detox "$ARCHIVE/"
+            cp target/${{ matrix.target }}/release/inline-detox "$ARCHIVE/" 2>/dev/null || true
             cp -r dist/completions "$ARCHIVE/"
             cp README.md LICENSE LICENSE-APACHE "$ARCHIVE/"
             tar czf "$ARCHIVE.tar.gz" "$ARCHIVE"
@@ -111,15 +111,15 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rusty-pwgen-${{ matrix.target }}
-          path: rusty-pwgen-*.tar.gz
+          name: rusty-detox-${{ matrix.target }}
+          path: rusty-detox-*.tar.gz
           if-no-files-found: ignore
       - name: Upload Windows artifact
         if: matrix.target == 'x86_64-pc-windows-msvc'
         uses: actions/upload-artifact@v4
         with:
-          name: rusty-pwgen-${{ matrix.target }}-zip
-          path: rusty-pwgen-*.zip
+          name: rusty-detox-${{ matrix.target }}-zip
+          path: rusty-detox-*.zip
 
   publish-crates-io:
     name: cargo publish
@@ -147,8 +147,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/**/rusty-pwgen-*.tar.gz
-            artifacts/**/rusty-pwgen-*.zip
+            artifacts/**/rusty-detox-*.tar.gz
+            artifacts/**/rusty-detox-*.zip
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
