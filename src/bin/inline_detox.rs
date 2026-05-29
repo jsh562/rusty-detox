@@ -2,6 +2,16 @@
 //!
 //! Reads stdin to EOF as a single name byte-sequence, applies the configured
 //! sequence, writes the sanitized name to stdout.
+//!
+//! Gated at the file level by `#[cfg(feature = "inline-detox")]` (in
+//! addition to `required-features = ["inline-detox"]` in Cargo.toml) so the
+//! portfolio-wide feature-lint phantom-leaf sub-check (FR-008 / FR-052
+//! sub-rule 3) recognizes the v0.1.x `inline-detox` feature as
+//! source-gated. The `required-features` attribute is the binding gate for
+//! the binary entry; this `cfg` is a no-op for build purposes (the binary
+//! is only compiled when the feature is enabled either way).
+
+#![cfg(feature = "inline-detox")]
 
 use std::io::{self, Read, Write};
 
